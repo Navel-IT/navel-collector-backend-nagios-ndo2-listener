@@ -32,6 +32,7 @@ WriteMakefile(
     MIN_PERL_VERSION => $min_perl_version,
     PREREQ_PM => {
         'Navel::Base' => 0,
+        'Navel::Logger' => 0,
         'AnyEvent::Socket' => 0,
         'AnyEvent::Handle' => 0,
         'Net::SSLeay' => 0,
