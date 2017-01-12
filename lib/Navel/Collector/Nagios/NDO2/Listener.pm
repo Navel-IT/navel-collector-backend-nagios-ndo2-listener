@@ -12,7 +12,7 @@ use Navel::Base;
 use constant {
     EVENT_CLASS => undef,
     NDO_PROTOCOL_END_FLAG => "\n999\n\n\n"
-}
+};
 
 use AnyEvent::Socket;
 use AnyEvent::Handle;
