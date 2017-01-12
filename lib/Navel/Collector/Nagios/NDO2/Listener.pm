@@ -9,7 +9,10 @@ package Navel::Collector::Nagios::NDO2::Listener 0.1;
 
 use Navel::Base;
 
-use constant EVENT_CLASS => undef;
+use constant {
+    EVENT_CLASS => undef,
+    NDO_PROTOCOL_END_FLAG => "\n999\n\n\n"
+}
 
 use AnyEvent::Socket;
 use AnyEvent::Handle;
@@ -98,22 +101,24 @@ sub new_server {
 
                         $handle->on_read(
                             sub {
-                                eval {
-                                    my $data = $ndo2->decode_data(delete shift->{rbuf});
+                                for (split NDO_PROTOCOL_END_FLAG, delete shift->{rbuf}) {
+                                    eval {
+                                        my $data = $ndo2->decode_data($_ + NDO_PROTOCOL_END_FLAG);
 
-                                    if ($data->{type} eq 'HOSTSTATUSDATA' || $data->{type} eq 'SERVICESTATUSDATA') {
-                                        my %event = (
-                                            time => $data->{values}->{TIMESTAMP},
-                                            id => $ndo2->{INSTANCENAME} . '/' . $data->{values}->{HOST},
-                                            class => 'nagios_ndo_' . $data->{type},
-                                            data => $data->{values}
-                                        );
+                                        if ($data->{type} eq 'HOSTSTATUSDATA' || $data->{type} eq 'SERVICESTATUSDATA') {
+                                            my %event = (
+                                                time => int $data->{values}->{TIMESTAMP} + 0.5,
+                                                id => $ndo2->{INSTANCENAME} . '/' . $data->{values}->{HOST},
+                                                class => 'nagios_ndo_' . $data->{type},
+                                                data => $data->{values}
+                                            );
 
-                                        $event{id} .= '/' . $data->{values}->{SERVICE} if $data->{type} eq 'SERVICESTATUSDATA';
+                                            $event{id} .= '/' . $data->{values}->{SERVICE} if $data->{type} eq 'SERVICESTATUSDATA';
 
-                                        W::queue->push(W::queue(%event));
-                                    }
-                                };
+                                            W::queue->push(W::queue(%event));
+                                        }
+                                    };
+                                }
                             }
                         );
                     }
