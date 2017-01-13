@@ -9,10 +9,7 @@ package Navel::Collector::Nagios::NDO2::Listener 0.1;
 
 use Navel::Base;
 
-use constant {
-    EVENT_CLASS => undef,
-    NDO_PROTOCOL_END_FLAG => "\n999\n\n\n"
-};
+use constant EVENT_CLASS => undef;
 
 use AnyEvent::Socket;
 use AnyEvent::Handle;
@@ -23,7 +20,7 @@ use Navel::Logger::Message;
 
 #-> class variables
 
-my $server;
+my ($server, %handles);
 
 #-> functions
 
@@ -36,7 +33,7 @@ sub new_server {
 
             my $from = $host . ':' . $port;
 
-            my $handle; $handle = AnyEvent::Handle->new(
+            $handles{$filehandle} = AnyEvent::Handle->new(
                 fh => $filehandle,
                 keepalive => 1,
                 W::collector()->{backend_input}->{tls} ? (
@@ -58,7 +55,7 @@ sub new_server {
                             ]
                         );
 
-                        undef $handle;
+                        delete $handles{$filehandle};
                     } else {
                         W::log(
                             [
@@ -76,11 +73,11 @@ sub new_server {
                         ]
                     );
 
-                    undef $handle;
+                    delete $handles{$filehandle};
                 }
             );
 
-            $handle->push_read(
+            $handles{$filehandle}->push_read(
                 regex => qr/HELLO/,
                 sub {
                     my $handle = shift;
@@ -101,9 +98,9 @@ sub new_server {
 
                         $handle->on_read(
                             sub {
-                                for (split NDO_PROTOCOL_END_FLAG, delete shift->{rbuf}) {
+                                for (split "\n\n", delete shift->{rbuf}) {
                                     eval {
-                                        my $data = $ndo2->decode_data($_ + NDO_PROTOCOL_END_FLAG);
+                                        my $data = $ndo2->decode_data($_);
 
                                         if ($data->{type} eq 'HOSTSTATUSDATA' || $data->{type} eq 'SERVICESTATUSDATA') {
                                             my %event = (
@@ -115,9 +112,16 @@ sub new_server {
 
                                             $event{id} .= '/' . $data->{values}->{SERVICE} if $data->{type} eq 'SERVICESTATUSDATA';
 
-                                            W::queue->push(W::queue(%event));
+                                            W::queue()->enqueue(W::event(%event));
                                         }
                                     };
+
+                                    W::log(
+                                        [
+                                            'warning',
+                                            $from . ': ' . $@
+                                        ]
+                                    ) if $@;
                                 }
                             }
                         );
@@ -139,6 +143,8 @@ sub enable {
 }
 
 sub disable {
+    %handles = ();
+
     undef $server;
 
     shift->(1);
