@@ -1,5 +1,5 @@
 # Copyright (C) 2015-2017 Yoann Le Garff, Nicolas Boquet and Yann Le Bras
-# navel-collector-nagios-ndo2-listener is licensed under the Apache License, Version 2.0
+# navel-collector-backend-nagios-ndo2-listener is licensed under the Apache License, Version 2.0
 
 #-> BEGIN
 
@@ -15,9 +15,9 @@ use ExtUtils::MakeMaker;
 my $min_perl_version = '5.18.0';
 
 WriteMakefile(
-    NAME => 'Navel::Collector::Nagios::NDO2::Listener',
-    VERSION_FROM => 'lib/Navel/Collector/Nagios/NDO2/Listener.pm',
-    ABSTRACT => 'navel-collector-nagios-ndo2-listener',
+    NAME => 'Navel::Collector::Backend::Nagios::NDO2::Listener',
+    VERSION_FROM => 'lib/Navel/Collector/Backend/Nagios/NDO2/Listener.pm',
+    ABSTRACT => 'navel-collector-backend-nagios-ndo2-listener',
     AUTHOR => 'Yoann Le Garff, Nicolas Boquet and Yann Le Bras',
     LICENSE => 'apache_2_0',
     META_MERGE => {
@@ -26,7 +26,7 @@ WriteMakefile(
         },
         resources => {
             license => 'http://www.apache.org/licenses/LICENSE-2.0.html',
-            repository => 'http://github.com/Navel-IT/navel-collector-nagios-ndo2-listener'
+            repository => 'http://github.com/Navel-IT/navel-collector-backend-nagios-ndo2-listener'
         }
     },
     MIN_PERL_VERSION => $min_perl_version,

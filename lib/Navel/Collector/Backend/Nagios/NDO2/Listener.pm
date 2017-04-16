@@ -1,11 +1,11 @@
 # Copyright (C) 2015-2017 Yoann Le Garff, Nicolas Boquet and Yann Le Bras
-# navel-collector-nagios-ndo2-listener is licensed under the Apache License, Version 2.0
+# navel-collector-backend-nagios-ndo2-listener is licensed under the Apache License, Version 2.0
 
 #-> BEGIN
 
 #-> initialization
 
-package Navel::Collector::Nagios::NDO2::Listener 0.1;
+package Navel::Collector::Backend::Nagios::NDO2::Listener 0.1;
 
 use Navel::Base;
 
@@ -162,7 +162,7 @@ __END__
 
 =head1 NAME
 
-Navel::Collector::Nagios::NDO2::Listener
+Navel::Collector::Backend::Nagios::NDO2::Listener
 
 =head1 COPYRIGHT
 
@@ -170,6 +170,6 @@ Copyright (C) 2015-2017 Yoann Le Garff, Nicolas Boquet and Yann Le Bras
 
 =head1 LICENSE
 
-navel-collector-nagios-ndo2-listener is licensed under the Apache License, Version 2.0
+navel-collector-backend-nagios-ndo2-listener is licensed under the Apache License, Version 2.0
 
 =cut
