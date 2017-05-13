@@ -82,8 +82,6 @@ sub new_server {
                 sub {
                     my $handle = shift;
 
-                    local $@;
-
                     my $ndo2 = eval {
                         Protocol::Nagios::NDO2->new(delete $handle->{rbuf});
                     };
